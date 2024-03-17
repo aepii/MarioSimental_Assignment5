@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+    canvas {
+        display: block;
+        margin: 0 auto;
+    }
+</style>
+</head>
+<body>
+  <canvas id="pieChart1" width="200" height="200"></canvas>
+  <canvas id="pieChart2" width="200" height="200"></canvas>
+  <script>
+    function createPieChart(canvasId, title, results){
+        let canvas = document.getElementById(canvasId);
+        let cx = canvas.getContext("2d");
+        let total = results.reduce((sum, { count }) => sum + count, 0);
+        let currentAngle = -0.5 * Math.PI;
+        let radius = Math.min(canvas.width, canvas.height) / 2;
+        let centerX = canvas.width / 2;
+        let centerY = canvas.height / 2;
+        for (let result of results) {
+            let sliceAngle = (result.count / total) * 2 * Math.PI;
+            cx.beginPath();
+            cx.moveTo(centerX, centerY);
+            cx.arc(centerX, centerY, radius, currentAngle, currentAngle + sliceAngle);
+            cx.closePath();
+            currentAngle += sliceAngle;
+            cx.fillStyle = result.color;
+            cx.fill();
+        }
+        currentAngle = -0.5 * Math.PI;
+        for(let result of results){
+            let sliceAngle = (result.count / total) * 2 * Math.PI;
+            let sliceMidAngle = currentAngle + sliceAngle / 2;
+            let textX = centerX + Math.cos(sliceMidAngle) * (radius * 0.85); 
+            let textY = centerY + Math.sin(sliceMidAngle) * (radius * 0.85); 
+            cx.font = "12px Arial"; 
+            cx.textAlign = "center";
+            cx.textBaseline = "middle";
+            cx.fillStyle = "black";
+            cx.fillText(result.name, textX, textY);
+            currentAngle += sliceAngle; 
+        }
+        cx.font = "16px Arial";
+        cx.textAlign = "center";
+        cx.fillStyle = "black";
+        cx.fillText(title, centerX, centerY);
+    }
+    
+    createPieChart("pieChart1", "Data Set 1", [
+      { name: "Very happy", count: 300, color: "lightblue" },
+      { name: "Happy", count: 500, color: "lightgreen" },
+      { name: "Neutral", count: 200, color: "pink" },
+      { name: "Unhappy", count: 200, color: "silver" },
+      { name: "Very unhappy", count: 200, color: "yellow" },
+      { name: "No comment", count: 200, color: "grey" }
+    ]);
+
+    createPieChart("pieChart2", "Data Set 2", [
+      { name: "Satisfied", count: 213, color: "lightblue" },
+      { name: "Neutral", count: 927, color: "lightgreen" },
+      { name: "Unsatisfied", count: 463, color: "pink" },
+      { name: "No comment", count: 510, color: "silver" }
+    ]);
+    
+  </script>
+</body>
+</html>
