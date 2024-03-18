@@ -1,3 +1,12 @@
+
+<!--
+   Assignment: EECS 468 Assignment 5
+   Description: HTML file containing JavaScript code to generate piecharts with given data.
+   Output: Two Piecharts.
+   Author: Mario Simental
+   Creation Date: 3/18/2024
+-->
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -9,55 +18,81 @@
 </style>
 </head>
 <body>
-  <canvas id="pieChart1" width="200" height="200"></canvas>
-  <canvas id="pieChart2" width="200" height="200"></canvas>
+  <!--Longer width so that text fits.-->
+  <canvas id="pieChart1" width="500" height="200"></canvas>
+  <canvas id="pieChart2" width="500" height="200"></canvas>
   <script>
+    // Function to create a pie chart
     function createPieChart(canvasId, title, results){
+        // Retrieve canvas element by ID
         let canvas = document.getElementById(canvasId);
+        // Get 2D drawing context
         let cx = canvas.getContext("2d");
+        // Calculate total count of all data points
         let total = results.reduce((sum, { count }) => sum + count, 0);
+        // Initialize current angle to start drawing slices from -90 degrees (top)
         let currentAngle = -0.5 * Math.PI;
+        // Calculate radius of the pie chart
         let radius = Math.min(canvas.width, canvas.height) / 2;
+        // Calculate center coordinates of the pie chart
         let centerX = canvas.width / 2;
         let centerY = canvas.height / 2;
+        // Loop through each data point to draw pie slices
         for (let result of results) {
             let sliceAngle = (result.count / total) * 2 * Math.PI;
+            // Begin drawing a new path
             cx.beginPath();
+            // Move to the center of the pie chart
             cx.moveTo(centerX, centerY);
+            // Draw an arc for the current slice
             cx.arc(centerX, centerY, radius, currentAngle, currentAngle + sliceAngle);
+            // Close the path
             cx.closePath();
-            currentAngle += sliceAngle;
+            // Fill the slice with the specified color
             cx.fillStyle = result.color;
             cx.fill();
+            // Update the current angle for the next slice
+            currentAngle += sliceAngle;
         }
+        // Reset current angle for drawing text labels
         currentAngle = -0.5 * Math.PI;
+        // Loop through each data point again to draw text labels
+        // This step is seperated so that they have priority in the z index.
         for(let result of results){
             let sliceAngle = (result.count / total) * 2 * Math.PI;
+            // Calculate the middle angle of the current slice
             let sliceMidAngle = currentAngle + sliceAngle / 2;
+            // Calculate coordinates for positioning text label
             let textX = centerX + Math.cos(sliceMidAngle) * (radius * 0.85); 
             let textY = centerY + Math.sin(sliceMidAngle) * (radius * 0.85); 
+            // Set font properties and alignment for text
             cx.font = "12px Arial"; 
             cx.textAlign = "center";
             cx.textBaseline = "middle";
             cx.fillStyle = "black";
+            // Draw text label next to the slice
             cx.fillText(result.name, textX, textY);
+            // Update current angle for the next slice
             currentAngle += sliceAngle; 
         }
+        // Add title text in the center of the pie chart
         cx.font = "16px Arial";
         cx.textAlign = "center";
         cx.fillStyle = "black";
         cx.fillText(title, centerX, centerY);
     }
     
+    // Create pie chart for data set 1
     createPieChart("pieChart1", "Data Set 1", [
-      { name: "Very happy", count: 300, color: "lightblue" },
-      { name: "Happy", count: 500, color: "lightgreen" },
-      { name: "Neutral", count: 200, color: "pink" },
-      { name: "Unhappy", count: 200, color: "silver" },
-      { name: "Very unhappy", count: 200, color: "yellow" },
-      { name: "No comment", count: 200, color: "grey" }
+      { name: "Very happy", count: 63, color: "lightblue" },
+      { name: "Happy", count: 104, color: "lightgreen" },
+      { name: "Neutral", count: 87, color: "pink" },
+      { name: "Unhappy", count: 51, color: "silver" },
+      { name: "Very unhappy", count: 26, color: "yellow" },
+      { name: "No comment", count: 18, color: "grey" }
     ]);
 
+    // Create pie chart for data set 2
     createPieChart("pieChart2", "Data Set 2", [
       { name: "Satisfied", count: 213, color: "lightblue" },
       { name: "Neutral", count: 927, color: "lightgreen" },
